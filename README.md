@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 飲食店開業セミナー ワークシートアプリ
 
-## Getting Started
+飲食店開業セミナーのワークで使用する、スマートフォン・PC対応のWebアプリです。
+現在は「ワーク①（3つの『なぜ』を整理しよう）」「ワーク②（競合を調べて、戦う場所を
+考えよう）」「ワーク③（お店の付加価値を整理しよう）」を実装しています。
 
-First, run the development server:
+「発想は人、整理はAI、決断は人」という方針のもと、参加者が紙のワークシートで
+すでに考えた内容だけをフォームに入力し、AIに渡すためのプロンプトを自動生成します。
+AIに新しいアイデアや最終案を考えさせることはしません。フォームは「考えるための
+画面」ではなく、紙で整理した内容をAIへ渡すための転記画面です。
+
+画面上部には、ワーク①〜③をいつでも切り替えられるタブを表示しています。
+
+## ワークの流れ
+
+### ワーク①
+
+1. 紙のワークシートで「3つのなぜ」を考える
+2. このアプリに入力する
+3. 「AIに貼り付ける文章をコピー」でプロンプトをコピーし、ChatGPT等に貼り付けて整理してもらう
+4. AIの文章をそのまま使わず、自分の考えと合っているか確認する
+5. あなたの言葉で「事業の目的」を紙に書く
+6. 紙を提出する
+
+### ワーク②
+
+1. 紙のワークシート1で初期プランを決める
+2. 紙の競合調査シートで競合3店舗を調査する
+3. グループ代表者がこのアプリへ転記する
+4. 「AIに貼り付ける文章をコピー」を押す
+5. ChatGPTへ貼り付け、競合情報を整理してもらう
+6. AIの整理結果を材料にグループで話し合う
+7. 紙のワークシート3に最終案（エリア・業態・価格帯・メインターゲット・
+   最終ポジショニング）を記入する
+8. 各グループが最終案を発表する
+
+### ワーク③
+
+1. 紙のワークシートで付加価値のアイデアを、5つの工程（仕入れ・調理・注文提供・
+   演出サービス・アフターサービス）ごとに考える
+2. グループ代表者がこのアプリへ転記する
+3. 「AIに貼り付ける文章をコピー」を押す
+4. ChatGPTへ貼り付け、AIに整理してもらう
+5. AIの整理結果を材料にグループで話し合う
+6. 「あのお店は〇〇のお店」で表せる最終コンセプトを自分たちで考える
+7. 紙のワークシートの「コンセプト」欄に記入する
+
+このアプリは、参加者の入力内容を保存・収集しません。最終的な成果物は
+紙に手書きした内容であり、AIの文章はあくまで整理のための下書きです。
+
+## 構成
+
+- `src/lib/types.ts` — ワーク共通の型（`WorkConfig` / `FormSection` / `QuestionField`）。
+- `src/content/work1.ts`, `src/content/work2.ts`, `src/content/work3.ts` —
+  各ワークの見出し・入力項目・AI用プロンプトの雛形。ワーク④以降を追加する場合は、
+  同じ形式で `src/content/work4.ts` などを追加し、`src/app/work4/page.tsx` を
+  作った上で `src/content/works.ts` に追記する想定です。
+- `src/content/works.ts` — トップページの一覧とワーク切り替えタブが共通で参照する
+  ワーク一覧。
+- `src/components/WorkForm.tsx` — 入力チェック・コピー・結果表示など、
+  ワーク共通の画面ロジックをまとめたコンポーネント。各ワークのページは
+  この `WorkForm` に設定を渡すだけの薄いラッパーです。
+- `src/components/WorkNav.tsx` — ワーク間を切り替えるタブ。
+- `src/lib/clipboard.ts` — クリップボードへのコピー処理（失敗時は手動コピー欄を表示）。
+
+## セットアップ手順
+
+### 1. 依存パッケージのインストール
+
+```bash
+npm install
+```
+
+### 2. ローカルで起動して確認する
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`http://localhost:3000/` を開いて動作確認する。同じWi-Fi内のスマートフォンから
+確認する場合は、PCのローカルIPアドレス（例: `http://192.168.1.10:3000/`）でアクセスする。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Vercel にデプロイして実機テストする（任意）
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. このリポジトリをGitHubにpushする。
+2. [Vercel](https://vercel.com/) でGitHubアカウント連携し、このリポジトリをインポートする。
+3. デプロイ完了後に発行されるURL（例: `https://xxxx.vercel.app/`）をスマートフォン実機で開いて確認する。
 
-## Learn More
+環境変数の設定は不要です。
 
-To learn more about Next.js, take a look at the following resources:
+## 動作確認のポイント
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 必須項目が未入力のまま送信すると、どの項目が未入力かが具体的に表示され
+  （例:「競合店②の『看板メニュー・ウリ』がまだ入力されていません。」）、
+  該当欄まで自動スクロールすること。
+- 「AIに貼り付ける文章をコピー」を押すと、クリップボードにプロンプトがコピーされ、
+  結果画面に「コピーできました。次にChatGPTを開いて、貼り付けて送信してください。」
+  「ChatGPTを開く」ボタン、「普段使っている別のAIがある方は、そちらを使っても
+  構いません。」の3つが、ワーク①〜③で共通の表示として出ること（AIを使った後の
+  討議手順などの追加案内は画面上には表示しない）。
+- クリップボードへのコピーに失敗する環境では、手動でコピーできるテキスト欄が
+  表示されること。
+- ボタン連打時に短時間（約2秒）は再送信されないこと。
+- 画面上部のタブでワーク①〜③を切り替えられ、現在地のタブが強調表示されること。
+- 幅320px程度のスマートフォンでも横スクロールが発生しないこと。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 今後の拡張予定（今回は未実装）
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 最終創業計画書作成ワークの追加（`src/content/work4.ts` などを追加する構成）。
+- スタッフ専用の「救済AI」機能（パスワード認証、開催日時・利用上限のチェック、
+  APIキーをサーバー側の環境変数で管理するAPI Route）。通常参加者の画面には
+  「うまく操作できない場合はスタッフをお呼びください」とだけ表示し、機能自体は
+  今回は実装していません。AIとのやり取りはデータベースに保存しない前提です。
