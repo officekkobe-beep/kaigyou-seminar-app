@@ -19,4 +19,10 @@ export const works = [
     title: "ワーク③",
     description: "お店の付加価値を整理しよう",
   },
+  {
+    href: "/day2-work1",
+    navLabel: "2日目①",
+    title: "2日目 ワーク①",
+    description: "厨房設備の比較",
+  },
 ];
