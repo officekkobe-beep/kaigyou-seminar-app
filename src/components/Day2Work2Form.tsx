@@ -320,6 +320,7 @@ export default function Day2Work2Form() {
                   }}
                   className={styles.input}
                   type="text"
+                  placeholder="例：平日、週末"
                   value={segment.name}
                   onChange={(e) => updateSegment(key, "name", e.target.value)}
                   aria-invalid={Boolean(errors[`${prefix}-name`])}
