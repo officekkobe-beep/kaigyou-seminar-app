@@ -1,0 +1,301 @@
+.page {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 18px 64px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.description {
+  margin-top: 12px;
+  font-size: 1.05rem;
+  color: var(--color-muted);
+}
+
+.form {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.segmentBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.segmentTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.fieldBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.help {
+  font-size: 0.98rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  font-size: 1.1rem;
+  font-family: inherit;
+  padding: 14px 14px;
+  border: 2px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.input:focus,
+.textarea:focus {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 1px;
+  border-color: var(--color-primary);
+}
+
+.textarea {
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--color-error-border);
+  background: var(--color-error-bg);
+}
+
+.error {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--color-error-text);
+}
+
+.calcButton {
+  width: 100%;
+  min-height: 60px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  border-radius: 14px;
+  cursor: pointer;
+  padding: 12px 16px;
+}
+
+.calcButton:active {
+  background: var(--color-bg);
+}
+
+.mainButton {
+  width: 100%;
+  min-height: 64px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  padding: 12px 16px;
+}
+
+.mainButton:active {
+  background: var(--color-primary-dark);
+}
+
+.mainButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.copyHint {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-warn-text);
+  text-align: center;
+}
+
+.staffNote {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.resultBox {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.resultBox.stale {
+  opacity: 0.65;
+}
+
+.staleWarning {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-warn-text);
+  background: var(--color-warn-bg);
+  border: 1px solid var(--color-warn-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  line-height: 1.7;
+}
+
+.formulaBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 1rem;
+  line-height: 1.8;
+  word-break: break-word;
+}
+
+.formulaSegmentTitle {
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+.warnMessage {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-warn-text);
+  background: var(--color-warn-bg);
+  border: 1px solid var(--color-warn-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  line-height: 1.7;
+}
+
+.gapBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-primary);
+}
+
+.gapRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gapLabel {
+  font-size: 1rem;
+  color: var(--color-muted);
+}
+
+.gapValue {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.gapValueStrong {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.gapQuestion {
+  margin-top: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.result {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.successMessage {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  line-height: 1.7;
+}
+
+.manualCopyArea {
+  width: 100%;
+  min-height: 140px;
+  font-size: 1rem;
+  font-family: inherit;
+  padding: 12px;
+  border: 2px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.chatGptButton {
+  display: block;
+  width: 100%;
+  min-height: 64px;
+  line-height: 64px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-primary-contrast);
+  background: var(--color-primary);
+  border-radius: 14px;
+  text-decoration: none;
+}
+
+.chatGptButton:active {
+  background: var(--color-primary-dark);
+}
+
+.smallNote {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  text-align: center;
+}

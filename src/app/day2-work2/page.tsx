@@ -1,8 +1,7 @@
 "use client";
 
-import WorkForm from "@/components/WorkForm";
-import { day2Work2 } from "@/content/day2Work2";
+import Day2Work2Form from "@/components/Day2Work2Form";
 
 export default function Day2Work2Page() {
-  return <WorkForm config={day2Work2} />;
+  return <Day2Work2Form />;
 }

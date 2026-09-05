@@ -5,80 +5,122 @@
 // 参加者が考えた戦略を「数字とのつながり・実行可能性・注意点」の
 // 観点で整理することだけに限定している。
 //
-// 既存の WorkConfig / WorkForm をそのまま流用できるため、専用コンポーネント
-// は作らない（2日目ワーク①は設備選択という特殊なUIが必要だったため専用
-// コンポーネントにしたが、今回は数値・テキスト入力のみのためワーク①〜③と
-// 同じ構成で十分）。「当初予定客単価：2,500円」という固定表示は、
-// フィールドを持たない FormSection（title のみ）として配置することで、
-// WorkForm 側のコードを一切変更せずに実現している。
+// 必要客単価・差額の計算はアプリ側（Day2Work2Form）が行い、このファイルは
+// (1) 計算ロジック (2) ページ見出し文言 (3) AIへ渡すプロンプトの組み立て、
+// の3つだけを担当する。今回のセミナー固有の数字（席数25・客単価2,500円等）は
+// 一切ハードコードしない。参加者が課題文を読んで入力した値のみを扱う、
+// セミナー後も再利用できる汎用の計算機にするため。
 
-import type { WorkConfig } from "@/lib/types";
+export type Day2Work2Segment = {
+  name: string;
+  occupancyRate: number; // 満席率（%）
+  turnoverRate: number; // 回転数（回転）
+  businessDays: number; // 営業日数（日）
+};
 
-export const day2Work2: WorkConfig = {
-  workId: "day2work2",
+export type Day2Work2CalcResult = {
+  segment1CustomersRaw: number;
+  segment2CustomersRaw: number;
+  totalCustomersRaw: number;
+  segment1CustomersDisplay: number;
+  segment2CustomersDisplay: number;
+  totalCustomersDisplay: number;
+  requiredUnitPriceRaw: number | null;
+  requiredUnitPriceDisplay: number | null;
+  diffRaw: number | null;
+  diffDisplay: number | null;
+};
+
+function segmentCustomers(seats: number, segment: Day2Work2Segment): number {
+  return seats * (segment.occupancyRate / 100) * segment.turnoverRate * segment.businessDays;
+}
+
+const round0 = (n: number) => Math.round(n);
+const round10 = (n: number) => Math.round(n / 10) * 10;
+
+// 表示は丸めるが、計算の連鎖（区分客数の合計や必要客単価の算出）は
+// 丸める前の数値を使う。区分ごとの表示客数の単純合計と、月間総客数の
+// 表示値がずれることがあるのは仕様どおり。
+export function calculateDay2Work2(input: {
+  targetSales: number;
+  seats: number;
+  currentUnitPrice: number;
+  segment1: Day2Work2Segment;
+  segment2: Day2Work2Segment;
+}): Day2Work2CalcResult {
+  const segment1CustomersRaw = segmentCustomers(input.seats, input.segment1);
+  const segment2CustomersRaw = segmentCustomers(input.seats, input.segment2);
+  const totalCustomersRaw = segment1CustomersRaw + segment2CustomersRaw;
+
+  const canComputeUnitPrice = totalCustomersRaw > 0;
+  const requiredUnitPriceRaw = canComputeUnitPrice
+    ? input.targetSales / totalCustomersRaw
+    : null;
+  const diffRaw =
+    requiredUnitPriceRaw !== null ? requiredUnitPriceRaw - input.currentUnitPrice : null;
+
+  return {
+    segment1CustomersRaw,
+    segment2CustomersRaw,
+    totalCustomersRaw,
+    segment1CustomersDisplay: round0(segment1CustomersRaw),
+    segment2CustomersDisplay: round0(segment2CustomersRaw),
+    totalCustomersDisplay: round0(totalCustomersRaw),
+    requiredUnitPriceRaw,
+    requiredUnitPriceDisplay: requiredUnitPriceRaw !== null ? round10(requiredUnitPriceRaw) : null,
+    diffRaw,
+    diffDisplay: diffRaw !== null ? round10(diffRaw) : null,
+  };
+}
+
+export const day2Work2Meta = {
   pageTitle: "ワーク②　収支計画の戦略チェック",
   pageDescription:
-    "自分たちで計算した数字と、チームで考えた戦略を入力してください。AIが戦略と数字のつながりを整理します。",
-  sections: [
-    {
-      id: "numbers",
-      fields: [
-        {
-          id: "targetSales",
-          label: "目標売上",
-          help: "円で入力してください。",
-          kind: "text",
-        },
-        {
-          id: "requiredUnitPrice",
-          label: "必要客単価",
-          help: "円で入力してください。",
-          kind: "text",
-        },
-      ],
-    },
-    {
-      id: "fixedNote",
-      title: "当初予定客単価：2,500円（固定）",
-      fields: [],
-    },
-    {
-      id: "strategies",
-      fields: [
-        {
-          id: "strategy1",
-          label: "チームで考えた戦略案①",
-          kind: "textarea",
-          rows: 4,
-        },
-        {
-          id: "strategy2",
-          label: "チームで考えた戦略案②",
-          kind: "textarea",
-          rows: 4,
-        },
-      ],
-    },
-  ],
-  buildPrompt: (answers) => `あなたは、飲食店の収支計画を考えるチームの「戦略検証役」です。
+    "課題文から目標売上・席数などの数字を読み取って入力してください。必要客単価と、当初想定していた客単価との差をアプリが計算します。その差をどう埋めるか、チームで考えた戦略をAIが数字とのつながりから整理します。",
+};
+
+export function buildDay2Work2Prompt(params: {
+  targetSales: number;
+  seats: number;
+  currentUnitPrice: number;
+  requiredUnitPriceDisplay: number;
+  diffDisplay: number;
+  segment1: Day2Work2Segment;
+  segment2: Day2Work2Segment;
+  strategy1: string;
+  strategy2: string;
+}): string {
+  const {
+    targetSales,
+    seats,
+    currentUnitPrice,
+    requiredUnitPriceDisplay,
+    diffDisplay,
+    segment1,
+    segment2,
+    strategy1,
+    strategy2,
+  } = params;
+
+  return `あなたは、飲食店の収支計画を考えるチームの「戦略検証役」です。
 
 私たちは、必要な売上や必要客単価を自分たちで計算し、その数字を達成するための戦略も自分たちで考えました。
 
 あなたの役割は、新しい戦略を考えることではありません。
 私たちが考えた戦略を、数字とのつながり・実行可能性・注意点の観点から整理し、私たち自身が最終判断しやすくすることです。
 
-【店舗】
-街角の元気な居酒屋「大衆酒場わっしょい！」
-
 【前提】
-・席数：25席
-・当初予定客単価：2,500円
-・目標売上：${answers.targetSales ?? ""}円
-・必要客単価：${answers.requiredUnitPrice ?? ""}円
+・目標売上：${targetSales}円
+・席数：${seats}席
+・現在想定している客単価：${currentUnitPrice}円
+・必要客単価：${requiredUnitPriceDisplay}円
+・客単価の差額（必要客単価－現在想定客単価）：${diffDisplay}円
+・営業区分「${segment1.name}」：満席率${segment1.occupancyRate}%、回転数${segment1.turnoverRate}回転、営業日数${segment1.businessDays}日
+・営業区分「${segment2.name}」：満席率${segment2.occupancyRate}%、回転数${segment2.turnoverRate}回転、営業日数${segment2.businessDays}日
 
 【私たちが考えた戦略】
-戦略①：${answers.strategy1 ?? ""}
-戦略②：${answers.strategy2 ?? ""}
+戦略①：${strategy1}
+戦略②：${strategy2}
 
 【お願い】
 
@@ -110,7 +152,7 @@ export const day2Work2: WorkConfig = {
 ・戦略①と戦略②を組み合わせる、両方を実施するなど、参加者が入力していない新しい選択肢を提案しない。
 
 【数字の整合性について】
-入力された「目標売上」「必要客単価」などの数字が、前提（席数・当初予定客単価など）との関係で違和感がある場合、または入力情報だけでは整合性を判断できない場合は、あなたが数字を修正したり、正しい数字を計算し直して提示したりしないでください。
+入力された「目標売上」「必要客単価」などの数字が、前提（席数・現在想定している客単価など）との関係で違和感がある場合、または入力情報だけでは整合性を判断できない場合は、あなたが数字を修正したり、正しい数字を計算し直して提示したりしないでください。
 その場合は、次のように明示してください。
 
 要確認：この数字の計算根拠をチームで確認してください。
@@ -139,5 +181,5 @@ export const day2Work2: WorkConfig = {
 最後に必ず次の問いを表示してください。
 
 「この2案のうち、自分たちのお店のコンセプトと現場での実行しやすさを考えたとき、どちらを採用するかチームで決めてください。」
-`,
-};
+`;
+}
