@@ -4,33 +4,71 @@
   margin: 0 auto;
   padding: 16px 18px 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 10px;
 }
 
-.tab,
-.tabActive {
-  flex: 1 1 90px;
+.dayRow {
+  display: flex;
+  gap: 10px;
+}
+
+.dayTab,
+.dayTabActive {
+  flex: 1 1 0;
   text-align: center;
-  padding: 12px 8px;
-  border-radius: 10px;
-  font-size: 1rem;
+  padding: 14px 8px;
+  border-radius: 12px;
+  font-size: 1.15rem;
   font-weight: 700;
   text-decoration: none;
-  min-height: 48px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.tab {
+.dayTab {
   color: var(--color-text);
   background: var(--color-surface);
   border: 2px solid var(--color-border);
 }
 
-.tabActive {
+.dayTabActive {
   color: var(--color-primary-contrast);
   background: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.workRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.workTab,
+.workTabActive {
+  flex: 1 1 80px;
+  text-align: center;
+  padding: 9px 6px;
+  border-radius: 9px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workTab {
+  color: var(--color-muted);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+}
+
+.workTabActive {
+  color: var(--color-primary);
+  background: var(--color-bg);
   border: 2px solid var(--color-primary);
 }
