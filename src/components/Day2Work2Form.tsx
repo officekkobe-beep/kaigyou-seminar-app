@@ -34,9 +34,24 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function emptySegment(): SegmentInput {
-  return { name: "", occupancyRate: "", turnoverRate: "", businessDays: "" };
-}
+// 今回のセミナー用の初期値。目標売上は参加者がワークシート2-1で
+// 自分で算出した値を入力するため、ここには含めない。
+// 席数・客単価・営業区分は入力済みの状態から始めるが、あくまで初期値であり、
+// 参加者はセミナー後も自分の店舗の数字に書き換えて再利用できる。
+const INITIAL_SEATS = "25";
+const INITIAL_CURRENT_UNIT_PRICE = "2500";
+const INITIAL_SEGMENT1: SegmentInput = {
+  name: "平日",
+  occupancyRate: "70",
+  turnoverRate: "1.5",
+  businessDays: "18",
+};
+const INITIAL_SEGMENT2: SegmentInput = {
+  name: "金土",
+  occupancyRate: "70",
+  turnoverRate: "2",
+  businessDays: "8",
+};
 
 function toNumber(value: string): number {
   return Number(value.replace(/,/g, "").trim());
@@ -62,10 +77,10 @@ function inputsKey(
 
 export default function Day2Work2Form() {
   const [targetSales, setTargetSales] = useState("");
-  const [seats, setSeats] = useState("");
-  const [currentUnitPrice, setCurrentUnitPrice] = useState("");
-  const [segment1, setSegment1] = useState<SegmentInput>(emptySegment);
-  const [segment2, setSegment2] = useState<SegmentInput>(emptySegment);
+  const [seats, setSeats] = useState(INITIAL_SEATS);
+  const [currentUnitPrice, setCurrentUnitPrice] = useState(INITIAL_CURRENT_UNIT_PRICE);
+  const [segment1, setSegment1] = useState<SegmentInput>(INITIAL_SEGMENT1);
+  const [segment2, setSegment2] = useState<SegmentInput>(INITIAL_SEGMENT2);
   const [strategy1, setStrategy1] = useState("");
   const [strategy2, setStrategy2] = useState("");
 
