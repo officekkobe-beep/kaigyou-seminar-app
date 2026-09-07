@@ -35,6 +35,6 @@ export const works = [
     day: 2,
     navLabel: "ワーク②",
     title: "2日目 ワーク②",
-    description: "収支計画の戦略チェック",
+    description: "売上・客単価のシミュレーション",
   },
 ];
