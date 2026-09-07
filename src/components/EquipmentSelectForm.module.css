@@ -34,6 +34,154 @@
   border: 2px solid var(--color-primary);
 }
 
+.guideNote {
+  margin-top: 28px;
+  padding: 14px 16px;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.productList {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.productCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 2px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+}
+
+.productTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.fileButton,
+.fileButtonDisabled {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 12px 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.fileButton {
+  color: var(--color-primary);
+  background: var(--color-bg);
+  border: 2px solid var(--color-primary);
+}
+
+.fileButton:active {
+  background: var(--color-surface);
+}
+
+.fileButtonDisabled {
+  color: var(--color-muted);
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  cursor: not-allowed;
+}
+
+.imageList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.imageRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+}
+
+.imageLabelProcessing,
+.imageLabelSuccess,
+.imageLabelError {
+  flex: 1 1 auto;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.imageLabelProcessing {
+  color: var(--color-muted);
+}
+
+.imageLabelSuccess {
+  color: var(--color-success-text);
+}
+
+.imageLabelError {
+  color: var(--color-error-text);
+}
+
+.removeButton {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--color-muted);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.removeButton:active {
+  background: var(--color-bg);
+}
+
+.imageLimitNote {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
 .copyButton {
   margin-top: 24px;
+}
+
+.copyHint {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-warn-text);
+  text-align: center;
 }
