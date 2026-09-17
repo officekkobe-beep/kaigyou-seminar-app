@@ -10,8 +10,8 @@ import styles from "./page.module.css";
 // 参加者が最初に迷わないことだけを目的にしている。
 const DAYS = [1, 2] as const;
 const DAY_LABELS: Record<number, string> = {
-  1: "1日目",
-  2: "2日目",
+  1: "第1回",
+  2: "第3回",
 };
 
 export default function Home() {
