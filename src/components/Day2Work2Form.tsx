@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   calculateDay2Work2,
   buildDay2Work2Prompt,
@@ -8,6 +8,7 @@ import {
   type Day2Work2CalcResult,
 } from "@/content/day2Work2";
 import { copyText } from "@/lib/clipboard";
+import { isDraftStorageAvailable, loadDraft, saveDraft } from "@/lib/draftStorage";
 import WorkNav from "./WorkNav";
 import styles from "./Day2Work2Form.module.css";
 
@@ -17,6 +18,22 @@ type SegmentInput = {
   turnoverRate: string;
   businessDays: string;
 };
+
+type DraftSaveStatus = "idle" | "ok" | "unavailable";
+
+type Day2Work2Draft = {
+  targetSales: string;
+  seats: string;
+  currentUnitPrice: string;
+  segment1: SegmentInput;
+  segment2: SegmentInput;
+  strategy1: string;
+  strategy2: string;
+};
+
+const DRAFT_KEY = "draft:day2work2";
+// 入力保存の書き込みをキー入力のたびに行わず、少し待ってからまとめて行う
+const DRAFT_SAVE_DEBOUNCE_MS = 400;
 
 type CalculatedSnapshot = {
   targetSales: number;
@@ -92,8 +109,60 @@ export default function Day2Work2Form() {
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
   const [copyOk, setCopyOk] = useState(false);
   const [promptText, setPromptText] = useState("");
+  const [draftSaveStatus, setDraftSaveStatus] = useState<DraftSaveStatus>("idle");
 
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  // マウント時に一度だけ、この端末に残っている下書きがあれば復元する
+  // （保存から6時間を超えていた場合は draftStorage 側で自動的に破棄される）。
+  // 計算結果そのものは保存せず、入力値だけを復元する（再度「計算する」を押せばよい）。
+  // localStorageはサーバー側で読めないため、意図的にレンダー後のeffectで読む。
+  useEffect(() => {
+    const draft = loadDraft<Day2Work2Draft>(DRAFT_KEY);
+    if (draft) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTargetSales(draft.targetSales ?? "");
+      setSeats(draft.seats ?? INITIAL_SEATS);
+      setCurrentUnitPrice(draft.currentUnitPrice ?? INITIAL_CURRENT_UNIT_PRICE);
+      setSegment1(draft.segment1 ?? INITIAL_SEGMENT1);
+      setSegment2(draft.segment2 ?? INITIAL_SEGMENT2);
+      setStrategy1(draft.strategy1 ?? "");
+      setStrategy2(draft.strategy2 ?? "");
+    }
+  }, []);
+
+  // 何か入力されている間だけ、少し待ってから一時保存する。
+  // localStorageが使えない・書き込みに失敗する環境でも例外は draftStorage 側で
+  // 吸収されるため、ここでは保存できたかどうかの表示状態を更新するだけでよい。
+  useEffect(() => {
+    const hasContent =
+      isFilled(targetSales) ||
+      isFilled(strategy1) ||
+      isFilled(strategy2) ||
+      seats !== INITIAL_SEATS ||
+      currentUnitPrice !== INITIAL_CURRENT_UNIT_PRICE;
+    if (!hasContent) return;
+
+    const timer = setTimeout(() => {
+      if (!isDraftStorageAvailable()) {
+        setDraftSaveStatus("unavailable");
+        return;
+      }
+      const draft: Day2Work2Draft = {
+        targetSales,
+        seats,
+        currentUnitPrice,
+        segment1,
+        segment2,
+        strategy1,
+        strategy2,
+      };
+      const ok = saveDraft(DRAFT_KEY, draft);
+      setDraftSaveStatus(ok ? "ok" : "unavailable");
+    }, DRAFT_SAVE_DEBOUNCE_MS);
+
+    return () => clearTimeout(timer);
+  }, [targetSales, seats, currentUnitPrice, segment1, segment2, strategy1, strategy2]);
 
   const currentKey = inputsKey(targetSales, seats, currentUnitPrice, segment1, segment2);
   const isStale = result !== null && calculatedKey !== null && calculatedKey !== currentKey;
@@ -239,6 +308,16 @@ export default function Day2Work2Form() {
       <main className={styles.page}>
         <h1 className={styles.title}>{day2Work2Meta.pageTitle}</h1>
         <p className={styles.description}>{day2Work2Meta.pageDescription}</p>
+        {draftSaveStatus === "ok" && (
+          <p className={styles.draftSavedNote}>
+            入力内容はこの端末に一時保存されています
+          </p>
+        )}
+        {draftSaveStatus === "unavailable" && (
+          <p className={styles.draftUnavailableNote}>
+            この端末では一時保存できません
+          </p>
+        )}
 
         <section className={styles.form}>
           <h2 className={styles.sectionTitle}>必要客単価を計算する</h2>

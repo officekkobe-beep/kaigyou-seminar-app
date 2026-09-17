@@ -1,15 +1,20 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { WorkConfig } from "@/lib/types";
 import { copyText } from "@/lib/clipboard";
+import { isDraftStorageAvailable, loadDraft, saveDraft } from "@/lib/draftStorage";
 import WorkNav from "./WorkNav";
 import styles from "./WorkForm.module.css";
 
 type Status = "idle" | "submitting" | "done";
+type DraftSaveStatus = "idle" | "ok" | "unavailable";
 
 // 連打による誤動作を防ぐための最短ボタン無効化時間
 const MIN_SUBMIT_MS = 2000;
+
+// 入力保存の書き込みをキー入力のたびに行わず、少し待ってからまとめて行う
+const DRAFT_SAVE_DEBOUNCE_MS = 400;
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -21,6 +26,7 @@ export type WorkFormProps = {
 
 export default function WorkForm({ config }: WorkFormProps) {
   const allFields = config.sections.flatMap((section) => section.fields);
+  const draftKey = `draft:${config.workId}`;
 
   const [answers, setAnswers] = useState<Record<string, string>>(() =>
     Object.fromEntries(allFields.map((f) => [f.id, ""])),
@@ -29,8 +35,39 @@ export default function WorkForm({ config }: WorkFormProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [copyOk, setCopyOk] = useState(false);
   const [promptText, setPromptText] = useState("");
+  const [draftSaveStatus, setDraftSaveStatus] = useState<DraftSaveStatus>("idle");
 
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  // マウント時に一度だけ、この端末に残っている下書きがあれば復元する
+  // （保存から6時間を超えていた場合は draftStorage 側で自動的に破棄される）。
+  // localStorageはサーバー側で読めないため、意図的にレンダー後のeffectで読む。
+  useEffect(() => {
+    const draft = loadDraft<Record<string, string>>(draftKey);
+    if (draft) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAnswers((prev) => ({ ...prev, ...draft }));
+    }
+  }, [draftKey]);
+
+  // 何か入力されている間だけ、少し待ってから一時保存する。
+  // localStorageが使えない・書き込みに失敗する環境でも例外は draftStorage 側で
+  // 吸収されるため、ここでは保存できたかどうかの表示状態を更新するだけでよい。
+  useEffect(() => {
+    const hasContent = Object.values(answers).some((v) => v.trim() !== "");
+    if (!hasContent) return;
+
+    const timer = setTimeout(() => {
+      if (!isDraftStorageAvailable()) {
+        setDraftSaveStatus("unavailable");
+        return;
+      }
+      const ok = saveDraft(draftKey, answers);
+      setDraftSaveStatus(ok ? "ok" : "unavailable");
+    }, DRAFT_SAVE_DEBOUNCE_MS);
+
+    return () => clearTimeout(timer);
+  }, [answers, draftKey]);
 
   function validate(): { id: string; message: string } | null {
     for (const section of config.sections) {
@@ -94,6 +131,16 @@ export default function WorkForm({ config }: WorkFormProps) {
       <main className={styles.page}>
         <h1 className={styles.title}>{config.pageTitle}</h1>
         <p className={styles.description}>{config.pageDescription}</p>
+        {draftSaveStatus === "ok" && (
+          <p className={styles.draftSavedNote}>
+            入力内容はこの端末に一時保存されています
+          </p>
+        )}
+        {draftSaveStatus === "unavailable" && (
+          <p className={styles.draftUnavailableNote}>
+            この端末では一時保存できません
+          </p>
+        )}
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           {config.sections.map((section) => (
