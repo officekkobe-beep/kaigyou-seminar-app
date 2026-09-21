@@ -8,6 +8,7 @@ import {
   day2Work1Meta,
   fridgeSupportProducts,
   dishwasherSupportProducts,
+  icemakerSupportProducts,
   type EquipmentId,
 } from "@/content/day2Work1";
 import WorkNav from "./WorkNav";
@@ -37,6 +38,7 @@ const MAX_IMAGES_PER_PRODUCT = 3;
 const SUPPORT_PRODUCTS: Partial<Record<EquipmentId, [string, string, string]>> = {
   fridge: fridgeSupportProducts,
   dishwasher: dishwasherSupportProducts,
+  icemaker: icemakerSupportProducts,
 };
 
 function emptyProducts(): ProductState[] {
