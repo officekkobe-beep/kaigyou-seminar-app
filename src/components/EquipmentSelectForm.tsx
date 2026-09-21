@@ -6,6 +6,7 @@ import { recognizeProductImage, terminateOcrWorker } from "@/lib/ocr";
 import {
   day2Work1Equipments,
   day2Work1Meta,
+  fridgeSupportProducts,
   type EquipmentId,
 } from "@/content/day2Work1";
 import WorkNav from "./WorkNav";
@@ -60,6 +61,7 @@ export default function EquipmentSelectForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [copyOk, setCopyOk] = useState(false);
   const [promptText, setPromptText] = useState("");
+  const [supportMessage, setSupportMessage] = useState("");
 
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const nextImageId = useRef(1);
@@ -86,8 +88,46 @@ export default function EquipmentSelectForm() {
     setSelectedId(id);
     setProducts(emptyProducts());
     invalidateCopy();
+    setSupportMessage("");
     fileInputRefs.current.forEach((input) => {
       if (input) input.value = "";
+    });
+  }
+
+  // 時間内に3商品そろえられなかった参加者向けの救済機能（冷凍冷蔵庫のみ）。
+  // 未登録（成功した画像が1枚もない）商品枠だけを、固定のサポートデータで
+  // ①→②→③の順にA→B→Cで補完する。すでに登録済みの枠は上書きしない。
+  function handleSupportFill() {
+    if (selectedId !== "fridge") return;
+
+    const emptyIndexes = products
+      .map((product, index) => (hasSuccessImage(product) ? -1 : index))
+      .filter((index) => index !== -1);
+
+    if (emptyIndexes.length === 0) {
+      setSupportMessage("3商品すべて登録されています");
+      return;
+    }
+
+    setSupportMessage("");
+    invalidateCopy();
+    setProducts((prev) => {
+      const next = [...prev];
+      emptyIndexes.forEach((productIndex, order) => {
+        const supportText = fridgeSupportProducts[order];
+        if (!supportText) return;
+        next[productIndex] = {
+          images: [
+            {
+              id: nextImageId.current++,
+              status: "success",
+              text: supportText,
+              errorMessage: "",
+            },
+          ],
+        };
+      });
+      return next;
     });
   }
 
@@ -98,6 +138,7 @@ export default function EquipmentSelectForm() {
 
     const imageId = nextImageId.current++;
     invalidateCopy();
+    setSupportMessage("");
 
     setProducts((prev) =>
       prev.map((product, index) =>
@@ -136,6 +177,7 @@ export default function EquipmentSelectForm() {
 
   function handleRemoveImage(productIndex: number, imageId: number) {
     invalidateCopy();
+    setSupportMessage("");
     setProducts((prev) =>
       prev.map((product, index) =>
         index === productIndex
@@ -203,6 +245,21 @@ export default function EquipmentSelectForm() {
             <p className={styles.guideNote}>
               価格・型式・新品／中古などの商品情報が文字で見える画面を選んでください。情報が複数画面に分かれている場合は、1商品につき最大3枚まで追加できます。
             </p>
+
+            {selectedId === "fridge" && (
+              <div className={styles.supportRow}>
+                <button
+                  type="button"
+                  className={styles.supportButton}
+                  onClick={handleSupportFill}
+                >
+                  サポート
+                </button>
+              </div>
+            )}
+            {supportMessage && (
+              <p className={styles.supportMessage}>{supportMessage}</p>
+            )}
 
             <div className={styles.productList}>
               {products.map((product, productIndex) => {
