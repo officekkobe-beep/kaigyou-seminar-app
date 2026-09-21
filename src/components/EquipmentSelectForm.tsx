@@ -9,6 +9,7 @@ import {
   fridgeSupportProducts,
   dishwasherSupportProducts,
   icemakerSupportProducts,
+  gasRangeSupportProducts,
   type EquipmentId,
 } from "@/content/day2Work1";
 import WorkNav from "./WorkNav";
@@ -39,6 +40,7 @@ const SUPPORT_PRODUCTS: Partial<Record<EquipmentId, [string, string, string]>> =
   fridge: fridgeSupportProducts,
   dishwasher: dishwasherSupportProducts,
   icemaker: icemakerSupportProducts,
+  gasRange: gasRangeSupportProducts,
 };
 
 function emptyProducts(): ProductState[] {
