@@ -7,6 +7,7 @@ import {
   day2Work1Equipments,
   day2Work1Meta,
   fridgeSupportProducts,
+  dishwasherSupportProducts,
   type EquipmentId,
 } from "@/content/day2Work1";
 import WorkNav from "./WorkNav";
@@ -30,6 +31,13 @@ type ProductState = {
 const PRODUCT_COUNT = 3;
 const PRODUCT_LABELS = ["①", "②", "③"];
 const MAX_IMAGES_PER_PRODUCT = 3;
+
+// 「サポート」機能に対応している設備と、その固定データ。未対応の設備は
+// このオブジェクトに存在しないため、ボタン自体が表示されない。
+const SUPPORT_PRODUCTS: Partial<Record<EquipmentId, [string, string, string]>> = {
+  fridge: fridgeSupportProducts,
+  dishwasher: dishwasherSupportProducts,
+};
 
 function emptyProducts(): ProductState[] {
   return Array.from({ length: PRODUCT_COUNT }, () => ({ images: [] }));
@@ -94,11 +102,12 @@ export default function EquipmentSelectForm() {
     });
   }
 
-  // 時間内に3商品そろえられなかった参加者向けの救済機能（冷凍冷蔵庫のみ）。
+  // 時間内に3商品そろえられなかった参加者向けの救済機能（対応設備のみ）。
   // 未登録（成功した画像が1枚もない）商品枠だけを、固定のサポートデータで
   // ①→②→③の順にA→B→Cで補完する。すでに登録済みの枠は上書きしない。
   function handleSupportFill() {
-    if (selectedId !== "fridge") return;
+    const supportProducts = selectedId ? SUPPORT_PRODUCTS[selectedId] : undefined;
+    if (!supportProducts) return;
 
     const emptyIndexes = products
       .map((product, index) => (hasSuccessImage(product) ? -1 : index))
@@ -114,7 +123,7 @@ export default function EquipmentSelectForm() {
     setProducts((prev) => {
       const next = [...prev];
       emptyIndexes.forEach((productIndex, order) => {
-        const supportText = fridgeSupportProducts[order];
+        const supportText = supportProducts[order];
         if (!supportText) return;
         next[productIndex] = {
           images: [
@@ -246,7 +255,7 @@ export default function EquipmentSelectForm() {
               価格・型式・新品／中古などの商品情報が文字で見える画面を選んでください。情報が複数画面に分かれている場合は、1商品につき最大3枚まで追加できます。
             </p>
 
-            {selectedId === "fridge" && (
+            {selectedId && SUPPORT_PRODUCTS[selectedId] && (
               <div className={styles.supportRow}>
                 <button
                   type="button"
