@@ -336,7 +336,8 @@ export const fridgeSupportProducts: [string, string, string] = [
 
 // 食洗機用の「サポート」機能データ。冷凍冷蔵庫と同じ扱い（成功OCR結果と同じ形式）。
 export const dishwasherSupportProducts: [string, string, string] = [
-  `メーカー：ホシザキ
+  `商品種別：業務用食器洗浄機
+メーカー：ホシザキ
 型式：JWE-450WUC3
 状態：新品
 販売価格：717,992円
@@ -345,7 +346,8 @@ export const dishwasherSupportProducts: [string, string, string] = [
 電源：三相200V
 処理能力：45ラック/時
 洗浄サイクル：80秒`,
-  `メーカー：ホシザキ
+  `商品種別：業務用食器洗浄機
+メーカー：ホシザキ
 型式：JWE-450WUB3
 状態：中古
 年式：2016年
@@ -360,7 +362,8 @@ export const dishwasherSupportProducts: [string, string, string] = [
 必要給湯温度：約65℃以上
 商品状態：傷、汚れ、水垢、へこみあり
 注意事項：前脚2本は高さ調整不可`,
-  `メーカー：ホシザキ
+  `商品種別：業務用食器洗浄機
+メーカー：ホシザキ
 型式：JWE-400TUC
 状態：新品
 販売価格：581,863円
