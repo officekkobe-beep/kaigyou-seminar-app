@@ -37,4 +37,11 @@ export const works = [
     title: "2日目 ワーク②",
     description: "売上・客単価のシミュレーション",
   },
+  {
+    href: "/day3-work1",
+    day: 3,
+    navLabel: "ワーク①",
+    title: "第5回 ワーク①",
+    description: "創業計画の総まとめ（シミュレーター）",
+  },
 ];

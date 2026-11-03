@@ -8,10 +8,11 @@ import styles from "./page.module.css";
 // トップページは「日程を選ぶ」→「その日のワークを選ぶ」の2段階。
 // 各ワークページ内の2段ナビ（WorkNav）とは別物で、ここでは
 // 参加者が最初に迷わないことだけを目的にしている。
-const DAYS = [1, 2] as const;
+const DAYS = [1, 2, 3] as const;
 const DAY_LABELS: Record<number, string> = {
   1: "第1回",
   2: "第3回",
+  3: "第5回",
 };
 
 export default function Home() {
