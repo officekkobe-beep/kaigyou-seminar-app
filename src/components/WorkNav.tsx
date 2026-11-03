@@ -17,6 +17,7 @@ export default function WorkNav() {
 
   const currentWork = works.find((work) => work.href === pathname);
   const currentDay = currentWork?.day ?? works[0].day;
+  const dayWorks = works.filter((work) => work.day === currentDay);
 
   return (
     <nav className={styles.nav} aria-label="ワーク切り替え">
@@ -38,9 +39,10 @@ export default function WorkNav() {
         })}
       </div>
 
+      {/* ワークが1つだけの回(第5回)は、ワークの切り替えボタンを出さない */}
+      {dayWorks.length > 1 && (
       <div className={styles.workRow}>
-        {works
-          .filter((work) => work.day === currentDay)
+        {dayWorks
           .map((work) => {
             const isActive = pathname === work.href;
             return (
@@ -55,6 +57,7 @@ export default function WorkNav() {
             );
           })}
       </div>
+      )}
     </nav>
   );
 }

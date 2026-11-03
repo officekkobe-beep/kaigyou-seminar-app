@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "飲食店開業セミナー ワークシート",
+  title: "飲食店開業セミナー",
   description: "飲食店開業セミナーのワークで使用するアプリです。",
 };
 
