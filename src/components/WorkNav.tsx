@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { works } from "@/content/works";
 import styles from "./WorkNav.module.css";
 
-const DAYS = [1, 2] as const;
+const DAYS = [1, 2, 3] as const;
 const DAY_LABELS: Record<number, string> = {
   1: "第1回",
   2: "第3回",
+  3: "第5回",
 };
 
 export default function WorkNav() {
