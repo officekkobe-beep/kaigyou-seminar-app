@@ -21,20 +21,31 @@ export default function Home() {
   if (selectedDay === null) {
     return (
       <main className={styles.page}>
-        <h1 className={styles.title}>飲食店開業セミナー ワークシート</h1>
-        <p className={styles.lead}>参加する日を選んでください。</p>
+        <h1 className={styles.title}>飲食店開業セミナー</h1>
+        <p className={styles.lead}>参加する回を選んでください。</p>
 
         <div className={styles.dayList}>
-          {DAYS.map((day) => (
-            <button
-              key={day}
-              type="button"
-              className={styles.dayCard}
-              onClick={() => setSelectedDay(day)}
-            >
-              {DAY_LABELS[day]}
-            </button>
-          ))}
+          {DAYS.map((day) => {
+            // ワークが1つだけの回(第5回)は、ワークを選ぶ画面を出さずにそのワークを直接開く
+            const dayWorks = works.filter((work) => work.day === day);
+            if (dayWorks.length === 1) {
+              return (
+                <Link key={day} href={dayWorks[0].href} className={`${styles.dayCard} ${styles.dayCardLink}`}>
+                  {DAY_LABELS[day]}
+                </Link>
+              );
+            }
+            return (
+              <button
+                key={day}
+                type="button"
+                className={styles.dayCard}
+                onClick={() => setSelectedDay(day)}
+              >
+                {DAY_LABELS[day]}
+              </button>
+            );
+          })}
         </div>
       </main>
     );
@@ -61,7 +72,7 @@ export default function Home() {
         className={styles.backButton}
         onClick={() => setSelectedDay(null)}
       >
-        ← 日程の選択に戻る
+        ← 戻る
       </button>
     </main>
   );

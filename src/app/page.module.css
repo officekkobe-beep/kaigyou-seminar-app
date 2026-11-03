@@ -42,6 +42,13 @@
   background: var(--color-primary-dark);
 }
 
+.dayCardLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
 .backButton {
   margin-top: 28px;
   width: 100%;
